@@ -1,0 +1,127 @@
+﻿@using Curves.SendEmail.Tools.Controllers
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>UpLoadFile</h2>
+        <input id="inputfile" name="inputFile[]" type="file" class="file-loading" data-allowed-file-extensions='["xls", "xlsx"]'>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-12">
+        @Html.DropDownList("Template_Select", HomeController.TemplateList, new { @class = "form-control", @style = "border:2px solid aquamarine" })
+    </div>
+    <div class="col-md-12">
+        <h2>List</h2>
+        <div class="col-md-3">Email</div>
+        <div class="col-md-1">Name</div>
+        <div class="col-md-1">C</div>
+        <div class="col-md-1">M</div>
+        <div class="col-md-1">Box</div>
+        <div class="col-md-1">B</div>
+        <div class="col-md-1">In</div>
+        <div class="col-md-1">N</div>
+        <div class="col-md-1">All</div>
+        <div class="col-md-1">Status</div>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-12">
+        <div class="progress">
+            <div id="sendProcess" class="progress-bar progress-bar-striped active" role="progressbar"
+                 aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+            </div>
+        </div>
+        <ul id="table" style="padding-left:0px;background-color:aquamarine"></ul>
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-2">
+            <p>寄件人(員工)：</p>
+        </div>
+        <div class="col-md-2">
+            <p>截止日期(yyyy/MM/dd)：</p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <input type="text" class="form-control" id="sendMail">
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control" id="lastDate">
+    </div>
+    <div class="col-md-8">
+        <button onclick="Send()" class="btn btn-default" style="border:2px solid cornflowerblue" disabled id="sendBtn">Send</button>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("#inputfile").fileinput({
+                uploadUrl: '/Home/UploadFile',
+                maxFileCount: 1,
+                showUpload: true,
+                showRemove: true,
+                language: "zh-TW",
+            }).on('fileuploaded', function (event, data) {
+                $('#table').html('');
+                var model = JSON.parse(data.response.message);
+                if (data.response.status) {
+                    $.each(model, function (key, value) {
+                        if (value != null) {
+                            $('#table').append('<li><div class="col-md-3">' + value.Email + '</div><div class="col-md-1">' + value.Name + '</div><div class="col-md-1">' + value.C + '</div><div class="col-md-1">' + value.M + '</div><div class="col-md-1">' + value.Box + '</div><div class="col-md-1">' + value.B + '</div><div class="col-md-1">' + value.In + '</div><div class="col-md-1">' + value.N + '</div><div class="col-md-1">' + value.All + '</div><div class="col-md-1">' + value.IsSend + '</div></li>');
+                            $('#sendBtn').attr('disabled', false);
+                        }
+                        else {
+                            $('#sendBtn').attr('disabled', true);
+                        }
+                    });
+                }
+            }).on('fileclear', function (event) {
+                $('#table').html('');
+                $('#sendBtn').attr('disabled', true);
+                $('#sendProcess').css('width', '0%');
+            }).on('filesuccessremove', function (event) {
+                $('#table').html('');
+                $('#sendBtn').attr('disabled', true);
+                $('#sendProcess').css('width', '0%');
+            });
+        });
+
+        function Send() {
+            var UrlSendEmail = '/Home/SendEmail'
+            var list = $('#table').children('li');
+            var complete = 0;
+            $.each(list, function (key, value) {
+                var events = $(this).children('div');
+                setTimeout(function () {
+                    if (events[9].innerText == "false") {
+                        $.ajax({
+                            url: UrlSendEmail,
+                            cache: false,
+                            type: "POST",
+                            data: { template: $('#Template_Select').val(), sendmail: $('#sendMail').val(), lastdate:$('#lastDate').val(), email: events[0].innerText, name: events[1].innerText, c: events[2].innerText, m: events[3].innerText, box: events[4].innerText, b: events[5].innerText, i: events[6].innerText, n: events[7].innerText, all: events[8].innerText },
+                            success: function (response) {
+                                if (response.status == true) {
+                                    complete++;
+                                    var percent = Math.floor((complete / list.length) * 100);
+                                    $('#sendProcess').css('width', percent + '%');
+                                }
+                                events[9].innerText = response.status;
+                            }
+                        });
+                    }
+                    else {
+                        complete++;
+                    }
+                }, 1500);
+            });
+        }
+    </script>
+}
