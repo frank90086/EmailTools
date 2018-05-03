@@ -204,6 +204,8 @@
     <None Include="Properties\PublishProfiles\CurvesTools - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\CurvesTools - Web Deploy.pubxml" />
     <Content Include="Sample.xlsx" />
+    <None Include="Properties\PublishProfiles\EmailTools - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\EmailTools - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.2.1.js" />
     <Content Include="Scripts\jquery-3.2.1.min.js" />
