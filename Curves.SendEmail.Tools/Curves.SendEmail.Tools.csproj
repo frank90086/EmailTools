@@ -203,6 +203,7 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <None Include="Properties\PublishProfiles\CurvesTools - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\CurvesTools - Web Deploy.pubxml" />
+    <Content Include="Sample.xlsx" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.2.1.js" />
     <Content Include="Scripts\jquery-3.2.1.min.js" />
